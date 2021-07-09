@@ -1,6 +1,6 @@
 spring:
   rabbitmq:
-    host: 127.0.0.1
+    host: 192.168.2.11
     port: 5672
     username: mqz
     password: mqz

@@ -1,7 +1,12 @@
 package com.mqz.rabbitmq.mq.provider;
 
+import com.mqz.rabbitmq.mq.common.Constant;
 import com.mqz.rabbitmq.web.NotifyXbDTO;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.amqp.AmqpException;
+import org.springframework.amqp.core.Message;
+import org.springframework.amqp.core.MessageDeliveryMode;
+import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,10 +52,33 @@ public class NotifyXbProvider {
         rabbitTemplate.setConfirmCallback(confirmCallback);
         CorrelationData correlationData = new CorrelationData();
         correlationData.setId(dto.getMessageId());
-        rabbitTemplate.convertAndSend("xbNotify-exchange",
-                "xbNotify.callback",
+
+
+        //消息延迟投递，需要配置rabbit延迟投递配置，参考RabbitConfig，正常投递不需要配置！！
+        //发送消息时指定 header 延迟时间
+        rabbitTemplate.convertAndSend(
+                Constant.lazy_exchange,
+                Constant.lazy_routing_key,
                 dto,
-                correlationData);
+                new MessagePostProcessor() {
+                    @Override
+                    public Message postProcessMessage(Message message) throws AmqpException {
+                        //设置消息持久化
+                        message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+                        //message.getMessageProperties().setHeader("x-delay", "6000");
+                        message.getMessageProperties().setDelay(6000);//延迟6秒
+                        return message;
+                    }
+                },
+                correlationData
+
+        );
+
+          //正常的消息投递
+//        rabbitTemplate.convertAndSend("xbNotify-exchange",
+//                "xbNotify.callback",
+//                dto,
+//                correlationData);
     }
 
 
