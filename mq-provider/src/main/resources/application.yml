@@ -1,0 +1,75 @@
+spring:
+  rabbitmq:
+    host: 139.155.180.57 #192.168.2.11 #139.155.180.57
+    port: 5672
+    username: mqz
+    password: mengqizhang
+    #虚拟主机地址
+    virtual-host: /
+    connection-timeout: 15000
+
+    # RabbitMQ的消息确认
+    # 1.消息发送确认：确认生产者将消息发送给交换器，交换器传递给队列过程是否成功投递，步骤：一是确认是否到达交换器，二是确认是否到达队列
+    # 2.消费接收确认： 确认消费者是否成功消费了队列中的消息，
+
+    # 确认消息发送成功，通过实现ConfirmCallBack接口，消息发送到交换器Exchange后触发回调
+    publisher-confirms: true #如果对异步消息需要回调必须设置为true
+    # 实现ReturnCallback接口，如果消息从交换器发送到对应队列失败时触发，（比如根据发送消息时指定的routingKey找不到队列时会触发）
+    publisher-returns: true
+
+    template:
+      mandatory: true # 设置为 true 后 消费者在消息没有被路由到合适队列情况下会被return监听，而不会自动删除
+      #投递方重试策略配置
+#      retry:
+#        enabled: true #启动发送重试策略
+#        initial-interval: 1000ms  #初始重试间隔为1s
+#        max-attempts: 3 #最大尝试重试次数
+#        max-interval: 10000ms #重试间隔最多10s
+#        multiplier: 1 # 每次重试的因子是1.0 等差
+
+    #消费端配置
+    listener:
+      simple:
+        #消费端
+        concurrency: 5
+        #最大消费端数
+        max-concurrency: 10
+        #自动签收auto  手动 manual
+        acknowledge-mode: manual
+        #限流（海量数据，同时只能过来一条）
+        prefetch: 1
+
+server:
+  port: 1112
+
+#mars-swagger-better配置
+swagger:
+  enabled: true
+  info:
+    title: better-rabbit-mq提供者在线接口文档
+    description: 提供者在线接口文档
+    url: http://localhost:1112/doc.html
+    contact: https://github.com/DemoMeng
+    version: 1.0.0
+
+
+knife4j:
+  # 开启增强配置
+  enable: true
+  #开启Swagger的Basic认证功能,默认是false
+  basic:
+    enable: true
+    username: mqz
+    password: mengqizhang
+#  自定义主页和自定义footer需要knife4j-spring-boot-starter版本大于等于2.0.8，
+#  并且2.0.6需要springboot为2.2.x
+#  setting:
+#    #自定义主页
+#    enableHomeCustom: true
+#    homeCustomLocation: classpath:resources/home/welcome.md
+#
+#    #自定义footer
+#    enableFooter: true
+#    enableFooterCustom: true
+#    footerCustomContent: SuperNiuBI License 2.0 | Copyright  2019-[浙江大拿有限公司](https://gitee.com/DemoMeng)
+

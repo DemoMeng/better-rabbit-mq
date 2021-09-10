@@ -11,10 +11,19 @@
     <groupId>com.mqz.rabbitmq</groupId>
     <artifactId>better-rabbit-mq</artifactId>
     <version>0.0.1</version>
+    <packaging>pom</packaging>
     <name>better-rabbit-mq</name>
     <description>the better rabbit mq power by mqz</description>
+
+    <modules>
+        <module>mq-common</module>
+        <module>mq-consumer</module>
+        <module>mq-provider</module>
+    </modules>
+
     <properties>
         <java.version>1.8</java.version>
+        <mars.swagger.better>0.0.1</mars.swagger.better>
     </properties>
     <dependencies>
         <!--集成消息队列-->
@@ -48,16 +57,11 @@
             <scope>provided</scope>
         </dependency>
 
-
+        <dependency>
+            <groupId>com.mqz.mars.swagger.better</groupId>
+            <artifactId>mars-swagger-better</artifactId>
+            <version>${mars.swagger.better}</version>
+        </dependency>
     </dependencies>
-
-    <build>
-        <plugins>
-            <plugin>
-                <groupId>org.springframework.boot</groupId>
-                <artifactId>spring-boot-maven-plugin</artifactId>
-            </plugin>
-        </plugins>
-    </build>
 
 </project>

@@ -1,0 +1,60 @@
+spring:
+  rabbitmq:
+    host: 139.155.180.57 #192.168.2.11 #139.155.180.57
+    port: 5672
+    username: mqz
+    password: mengqizhang
+    #虚拟主机地址
+    virtual-host: /
+    connection-timeout: 15000
+    template:
+      mandatory: true
+    #消费端配置
+    listener:
+      simple:
+        #消费端
+        concurrency: 5
+        #最大消费端数
+        max-concurrency: 10
+        #自动签收auto  手动 manual
+        acknowledge-mode: manual
+        #限流（海量数据，同时只能过来一条）
+        prefetch: 1
+#      direct:
+#        acknowledge-mode: manual  #配置手动确认，和 RabbitConfig 配置一样
+server:
+  port: 1111
+
+
+
+#mars-swagger-better配置
+swagger:
+  enabled: true
+  info:
+    title: better-rabbit-mq消费方在线接口文档
+    description: 消费方在线接口文档
+    url: http://localhost:1111/doc.html
+    contact: https://github.com/DemoMeng
+    version: 1.0.0
+
+
+knife4j:
+  # 开启增强配置
+  enable: true
+  #开启Swagger的Basic认证功能,默认是false
+  basic:
+    enable: true
+    username: mqz
+    password: mengqizhang
+#  自定义主页和自定义footer需要knife4j-spring-boot-starter版本大于等于2.0.8，
+#  并且2.0.6需要springboot为2.2.x
+#  setting:
+#    #自定义主页
+#    enableHomeCustom: true
+#    homeCustomLocation: classpath:resources/home/welcome.md
+#
+#    #自定义footer
+#    enableFooter: true
+#    enableFooterCustom: true
+#    footerCustomContent: SuperNiuBI License 2.0 | Copyright  2019-[浙江大拿有限公司](https://gitee.com/DemoMeng)
+
