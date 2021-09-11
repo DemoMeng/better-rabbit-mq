@@ -16,12 +16,12 @@ import java.util.Map;
 
 /**
  * @author mqz
- * @description rabbitMq 消息队列序列化配置
+ * @description rabbitMq  延迟消息 交换器、队列、交换器和队列绑定，绑定routing_key
  * @abount https://github.com/DemoMeng
  * @since 2020/12/4
  */
 @Configuration
-public class RabbitConfig {
+public class RabbitDelayConfig {
 
     /**
      * double check
@@ -33,14 +33,14 @@ public class RabbitConfig {
      *
      *
      */
-//    @Bean
-//    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
-//        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
-//        factory.setAcknowledgeMode(AcknowledgeMode.MANUAL);
-//        factory.setConnectionFactory(connectionFactory);
-//        factory.setMessageConverter(new Jackson2JsonMessageConverter());
-//        return factory;
-//    }
+    @Bean
+    public SimpleRabbitListenerContainerFactory rabbitListenerContainerFactory(ConnectionFactory connectionFactory) {
+        SimpleRabbitListenerContainerFactory factory = new SimpleRabbitListenerContainerFactory();
+        factory.setAcknowledgeMode(AcknowledgeMode.MANUAL); // 代码设置消费方确认机制，因为spring-boot-starter-amqp默认是自动签收信息的方式，消费了两次消息
+        factory.setConnectionFactory(connectionFactory);
+        //factory.setMessageConverter(new Jackson2JsonMessageConverter());
+        return factory;
+    }
 
 
 
@@ -55,28 +55,28 @@ public class RabbitConfig {
     }
 
 
-    // 延迟投递----开始------
-
-    @Bean
-    public TopicExchange lazyTopicExchange(){
+    // 延迟投递 配置交换器、队列、交换器队列绑定----开始------
+    @Bean("customExchangeBean")
+    public CustomExchange lazyTopicExchange(){
         Map<String, Object> pros = new HashMap<>();
         //设置交换机支持延迟消息推送
-        //pros.put("x-delayed-message", "topic");
-        TopicExchange exchange = new TopicExchange(Constant.lazy_exchange, true, false, pros);
-        exchange.setDelayed(true);
-        return exchange;
+        //pros.put("x-delayed-message", "direct");
+        CustomExchange customExchange = new CustomExchange(Constant.lazy_exchange,"x-delayed-message",true,false,pros);
+        return customExchange;
     }
 
-    @Bean
+
+
+    @Bean("lazy-queue")
     public Queue lazyQueue(){
         return new Queue(Constant.lazy_queue, true);
     }
 
     @Bean
     public Binding lazyBinding(){
-        return BindingBuilder.bind(lazyQueue()).to(lazyTopicExchange()).with(Constant.lazy_routing_key);
+        return BindingBuilder.bind(lazyQueue()).to(lazyTopicExchange()).with(Constant.lazy_routing_key).noargs();
     }
-    // 延迟投递----结束------
+    // 延迟投递 配置交换器、队列、交换器队列绑定----结束------
 
 
 

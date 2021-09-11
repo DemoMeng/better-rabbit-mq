@@ -28,16 +28,16 @@ spring:
 #        multiplier: 1 # 每次重试的因子是1.0 等差
 
     #消费端配置
-    listener:
-      simple:
-        #消费端
-        concurrency: 5
-        #最大消费端数
-        max-concurrency: 10
-        #自动签收auto  手动 manual
-        acknowledge-mode: manual
-        #限流（海量数据，同时只能过来一条）
-        prefetch: 1
+#    listener:
+#      simple:
+#        #消费端
+#        concurrency: 5
+#        #最大消费端数
+#        max-concurrency: 10
+#        #限流（海量数据，同时只能过来一条）
+#        prefetch: 1
+#      direct:
+#        acknowledge-mode: manual #设置ack为手动确认模式，auto自动确认模式
 
 server:
   port: 1112

@@ -27,24 +27,18 @@ public class MessageConsumer {
 
     private static final String SUCCESS = "SUCCESS";
 
-    /**
-     * @param dto
-     * @param headers
-     * @param channel
-     * @throws IOException
-     */
-//    @RabbitListener(
-//        bindings = @QueueBinding(//数据是否持久化
-//            value = @Queue(value = Constant.lazy_queue,durable = "true"),
-//            exchange = @Exchange(name = Constant.lazy_exchange, durable = "true",type = "x-delayed-message"),
-//            key= Constant.lazy_routing_key
-//        )
-//    )
-    @RabbitListener(queues = Constant.lazy_queue)
+    @RabbitListener(
+        bindings = @QueueBinding(//数据是否持久化
+            value = @Queue(value = Constant.lazy_queue,durable = "true"),
+            exchange = @Exchange(name = Constant.lazy_exchange, durable = "true",type = "x-delayed-message"),
+            key= Constant.lazy_routing_key
+        )
+    )
+    //@RabbitListener(queues = Constant.lazy_queue)
     public void onDo(@Payload MessageDTO dto,
                      @Headers Map<String, Object> headers,
                      Channel channel) throws IOException {
-        log.info("----【延迟投递消息】收到消息，开始消费-----");
+        log.info("【延迟投递消息】收到消息，开始消费");
 //        if(dto.getTemplateNo().equals("123")){
 //            throw new IOException("模拟异常抛出，看是否消费成功");
 //        }
@@ -57,7 +51,7 @@ public class MessageConsumer {
          */
         log.info("【延迟投递消息】:deliveryTag:{}",deliveryTag);
         // 手工ack
-        channel.basicAck(deliveryTag,true);
-        log.info("--------【延迟投递消息】消费完成--------");
+        channel.basicAck(deliveryTag,false);
+        log.info("【延迟投递消息】消费完成");
     }
 }

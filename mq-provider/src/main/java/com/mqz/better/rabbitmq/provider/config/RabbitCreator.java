@@ -34,22 +34,21 @@ public class RabbitCreator {
 //        return new RabbitAdmin(connectionFactory());
 //    }
 
-
-//    @Bean(Constant.DEMO_QUEUE)
-//    public Queue createQueue() {
-//        return new Queue(Constant.DEMO_QUEUE,true);
-//    }
+    /**
+     *
+     * 交换机用同一个
+     */
 //    @Bean(Constant.DEMO_EXCHANGE)
 //    public Exchange createExchange(){
 //        return new TopicExchange(Constant.DEMO_EXCHANGE,true,false);
 //    }
-//    @Bean
-//    public Binding planQueueBinding(@Qualifier(Constant.DEMO_QUEUE) Queue queue,
-//                                    @Qualifier(Constant.DEMO_EXCHANGE) TopicExchange topicExchange){
-//        return BindingBuilder.bind(queue).to(topicExchange).with(Constant.DEMO_ROUTING_KEY);
-//    }
 
 
+
+
+    /**
+     * usually队列
+     */
     @Bean(Constant.usually_queue)
     public Queue createQueue1() {
         return new Queue(Constant.usually_queue,true);
@@ -60,8 +59,22 @@ public class RabbitCreator {
     }
     @Bean
     public Binding queueBinding2(@Qualifier(Constant.usually_queue) Queue queue,
-                                    @Qualifier(Constant.usually_exchange) TopicExchange topicExchange){
+                                 @Qualifier(Constant.usually_exchange) TopicExchange topicExchange){
         return BindingBuilder.bind(queue).to(topicExchange).with(Constant.usually_routing_key);
+    }
+
+
+    /**
+     * demo队列
+     */
+    @Bean(Constant.DEMO_QUEUE)
+    public Queue createDemoQueue() {
+        return new Queue(Constant.DEMO_QUEUE,true);
+    }
+    @Bean
+    public Binding createDemoQueueBinding(@Qualifier(Constant.DEMO_QUEUE) Queue queue,
+                                          @Qualifier(Constant.usually_exchange) TopicExchange topicExchange){//共用同一个交换机
+        return BindingBuilder.bind(queue).to(topicExchange).with(Constant.DEMO_ROUTING_KEY);
     }
 
 

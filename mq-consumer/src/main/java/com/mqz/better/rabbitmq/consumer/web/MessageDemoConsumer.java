@@ -34,38 +34,41 @@ public class MessageDemoConsumer {
      *  自定义类型的消息需要标注@Payload，类要实现序列化接口
      */
 
+//        @RabbitListener(
+//                bindings = @QueueBinding(
+//                        value = @Queue(value = Constant.DEMO_QUEUE, durable = "true"),
+//                        exchange = @Exchange(value = Constant.DEMO_EXCHANGE, type = "topic"),
+//                        key = Constant.DEMO_ROUTING_KEY
+//                )
+//        )
+//    public void onMessage(Message message, Channel channel) throws IOException {
+//
+//        try {
+//            Thread.sleep(5000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+//        long deliveryTag = message.getMessageProperties().getDeliveryTag();
+//        //手工ack
+//        channel.basicAck(deliveryTag,true);
+//        log.info("【常规消息demo】receive--1: {}",message.getBody());
+//    }
     @RabbitListener(
-            bindings = @QueueBinding(
-                    value = @Queue(value = Constant.DEMO_QUEUE, durable = "true"),
-                    exchange = @Exchange(value = Constant.DEMO_EXCHANGE, type = "topic"),
-                    key = "demo.callback"
-            )
+        bindings = @QueueBinding(
+            value = @Queue(value = Constant.DEMO_QUEUE, durable = "true"),
+            exchange = @Exchange(value = Constant.usually_exchange, type = "topic"),
+            key = Constant.DEMO_ROUTING_KEY
+        )
     )
-    public void onMessage(Message message, Channel channel) throws IOException {
-
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        long deliveryTag = message.getMessageProperties().getDeliveryTag();
-        //手工ack
-        channel.basicAck(deliveryTag,true);
-        System.out.println("receive--1: " + new String(message.getBody()));
-    }
-
-    @RabbitHandler
-    public void onUserMessage(@Payload MessageDTO dto, Channel channel, 
-                              @Headers Map<String,Object> headers) throws IOException {
-        try {
-            Thread.sleep(5000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+    public void onUserMessage(@Payload MessageDTO dto,
+                              @Headers Map<String,Object> headers,
+                              Channel channel) throws IOException {
+        log.info("【常规消息demo】receive--2: {}",dto.toString());
         long deliveryTag = (Long)headers.get(AmqpHeaders.DELIVERY_TAG);
+        log.info("【常规消息demo】:deliveryTag:{}",deliveryTag);
         //手工ack
-        channel.basicAck(deliveryTag,true);
-        System.out.println("receive--11: " + dto.toString());
+        channel.basicAck(deliveryTag,false);
+        log.info("【常规消息demo】receive--2: {}",dto.toString());
     }
 
 

@@ -20,14 +20,23 @@ public class Constant {
 
 
 
+    // usually
     public final static String usually_exchange = "usually-exchange";
     public final static String usually_routing_key = "usuallyNotify.callback";
     public final static String usually_queue = "usually-queue";
 
 
+    // demo
     public final static String DEMO_QUEUE = "demo-queue";
     public final static String DEMO_ROUTING_KEY = "demo.callback";
     public final static String DEMO_EXCHANGE = "demo-exchange";
+
+
+    //死信
+    public final static String DEAD_QUEUE = "dead-queue";
+    public final static String DEAD_EXCHANGE = "dead-exchange";
+    public final static String DEAD_ROUTING_KEY = "dead.routing.key";
+    public final static String DEAD_QUEUE_RE = "dead-queue-re";
 
 
 

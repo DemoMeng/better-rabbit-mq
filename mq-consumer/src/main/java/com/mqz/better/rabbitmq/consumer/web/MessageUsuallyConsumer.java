@@ -40,8 +40,10 @@ public class MessageUsuallyConsumer {
             key= Constant.usually_routing_key
         )
     )
-    public void onDo(@Payload MessageDTO dto, @Headers Map<String, Object> headers, Channel channel) throws IOException {
-        log.info("----【常规消息】收到消息，开始消费-----");
+    public void onDo(@Payload MessageDTO dto,
+                     @Headers Map<String, Object> headers,
+                     Channel channel) throws IOException {
+        log.info("【常规消息usually】收到消息，开始消费");
         Long deliveryTag = (Long) headers.get(AmqpHeaders.DELIVERY_TAG);
         /**
          *  取值为 false 时，表示通知 RabbitMQ 当前消息被确认
@@ -50,9 +52,10 @@ public class MessageUsuallyConsumer {
 //        if(dto.getTemplateNo().equals("123")){
 //            throw new IOException("模拟异常抛出，看是否消费成功");
 //        }
-        log.info("【常规消息】 参数:{}",dto.toString());
+        log.info("【常规消息usually】:deliveryTag:{}",deliveryTag);
+        log.info("【常规消息usually】 参数:{}",dto.toString());
         // 手工ack
-        channel.basicAck(deliveryTag,true);
-        log.info("--------【常规消息】消费完成--------");
+        channel.basicAck(deliveryTag,false);
+        log.info("【常规消息usually】消费完成");
     }
 }
