@@ -60,7 +60,9 @@ public class MessageProvider {
         @Override
         public void returnedMessage(ReturnedMessage returnedMessage) {
             log.info("【延迟消息】消息经交换器发送到队列失败触发，回调参数：{}",returnedMessage);
+            //TODO 重新执行
         }
+
     };
 
 

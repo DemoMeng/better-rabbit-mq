@@ -58,6 +58,7 @@ public class MessageUsuallyProvider {
         @Override
         public void returnedMessage(ReturnedMessage returnedMessage) {
             log.info("【常规消息usually】消息经交换器发送到队列失败触发，回调参数：{}",returnedMessage);
+            //TODO 重新执行
         }
     };
 

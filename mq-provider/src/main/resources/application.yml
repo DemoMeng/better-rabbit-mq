@@ -18,7 +18,7 @@ spring:
     publisher-returns: true
 
     template:
-      mandatory: true # 设置为 true 后 消费者在消息没有被路由到合适队列情况下会被return监听，而不会自动删除
+      mandatory: true # 设置为 true 后消息没有成功交换器到被路由到合适队列情况下会被return（ ReturnCallback函数）监听，而不会自动删除
       #投递方重试策略配置
 #      retry:
 #        enabled: true #启动发送重试策略

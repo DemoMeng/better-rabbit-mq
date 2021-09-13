@@ -60,6 +60,7 @@ public class MessageDemoProvider {
         @Override
         public void returnedMessage(ReturnedMessage returnedMessage) {
             log.info("【常规消息demo】消息经交换器发送到队列失败触发，回调参数：{}",returnedMessage.toString());
+            //TODO 重新执行
         }
     };
 

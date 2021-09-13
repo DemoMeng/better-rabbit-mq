@@ -8,7 +8,7 @@ spring:
     virtual-host: /
     connection-timeout: 15000
     template:
-      mandatory: true
+      mandatory: true # 设置为 true 后消息没有成功交换器到被路由到合适队列情况下会被return（ ReturnCallback函数）监听，而不会自动删除
     #消费端配置
     listener:
       simple:
