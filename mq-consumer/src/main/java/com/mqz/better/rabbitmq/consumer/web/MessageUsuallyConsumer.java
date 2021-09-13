@@ -23,8 +23,6 @@ import java.util.Map;
 @Slf4j
 public class MessageUsuallyConsumer {
 
-
-
     private static final String SUCCESS = "SUCCESS";
 
     /**
