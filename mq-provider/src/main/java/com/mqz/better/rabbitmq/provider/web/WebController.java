@@ -1,6 +1,7 @@
 package com.mqz.better.rabbitmq.provider.web;
 
 import com.mqz.better.rabbitmq.common.model.dto.MessageDTO;
+import com.mqz.better.rabbitmq.provider.provider.MessageDeadLetterProvider;
 import com.mqz.better.rabbitmq.provider.provider.MessageDemoProvider;
 import com.mqz.better.rabbitmq.provider.provider.MessageProvider;
 import com.mqz.better.rabbitmq.provider.provider.MessageUsuallyProvider;
@@ -31,6 +32,8 @@ public class WebController {
     private MessageUsuallyProvider messageUsuallyProvider;
     @Resource
     private MessageDemoProvider messageDemoProvider;
+    @Resource
+    private MessageDeadLetterProvider messageDeadLetterProvider;
 
     @PostMapping(value = "go")
     @ApiOperation(value = "延迟投递消息-发送")
@@ -68,6 +71,18 @@ public class WebController {
                 .setUrl(dto.getUrl());
         messageDemoProvider.send(d);
         return "【常规消息1】messageId:"+d.getMessageId();
+    }
+
+    @PostMapping(value = "dead/go")
+    @ApiOperation(value = "死信队列-模拟发送")
+    public String deadGo(@RequestBody MessageDTO dto){
+        MessageDTO d = new MessageDTO()
+                .setMessageId(UUID.randomUUID().toString())
+                .setBusinessNo(dto.getBusinessNo())
+                .setTemplateNo(dto.getTemplateNo())
+                .setUrl(dto.getUrl());
+        messageDeadLetterProvider.send(d);
+        return "【死信队列】messageId:"+d.getMessageId();
     }
 
 }

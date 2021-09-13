@@ -16,7 +16,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * 青网科技集团 版权所有 © Copyright 2012<br>
+ *  版权所有 © Copyright 2012<br>
  *
  * @Author： 蒙大拿
  * @Date：2021/9/11 3:49 下午

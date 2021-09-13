@@ -14,15 +14,14 @@ import javax.annotation.Resource;
  *  版权所有 © Copyright 2012<br>
  *
  * @Author： 蒙大拿
- * @Date：2021/9/10 4:08 下午
+ * @Date：2021/9/13 4:29 下午
  * @Description
  * @About： https://github.com/DemoMeng
  */
+
 @Component
 @Slf4j
-public class MessageDemoProvider {
-
-
+public class MessageDeadLetterProvider {
 
     @Resource
     private RabbitTemplate rabbitTemplate;
@@ -39,16 +38,17 @@ public class MessageDemoProvider {
         @Override
         public void confirm(CorrelationData correlationData, boolean ack, String cause) {
             String messageId = correlationData.getId();
-            log.info("【常规消息demo】消息成功投递触发了【提供者】的回调。。。");
+            log.info("【死信队列】消息成功投递触发了【提供者】的回调。。。");
             //返回成功，表示消息被正常投递
             if (ack) {
-                log.info("【常规消息demo】信息投递成功，messageId:{}",messageId);
+                log.info("【死信队列】信息投递成功，messageId:{}",messageId);
             } else {
-                log.error("【常规消息demo】消费信息失败，messageId:{} 原因:{}",messageId,cause);
+                log.error("【死信队列】消费信息失败，messageId:{} 原因:{}",messageId,cause);
                 //TODO 重新执行
             }
         }
     };
+
 
     /***
      * 【消息发送确认2】消息从交换器发送到对应队列
@@ -56,13 +56,11 @@ public class MessageDemoProvider {
      * 这个方法可以不用重写，因为交换器和队列是在代码中绑定的，若回调了这个方法则说明交换器和队列绑定的问题
      * */
     private final RabbitTemplate.ReturnsCallback returnsCallback = new RabbitTemplate.ReturnsCallback(){
-
         @Override
         public void returnedMessage(ReturnedMessage returnedMessage) {
-            log.info("【常规消息demo】消息经交换器发送到队列失败触发，回调参数：{}",returnedMessage.toString());
+            log.info("【死信队列】消息经交换器发送到队列失败触发，回调参数：{}",returnedMessage);
         }
     };
-
 
 
     /**
@@ -77,10 +75,12 @@ public class MessageDemoProvider {
         correlationData.setId(dto.getMessageId());
         //正常的消息投递
         rabbitTemplate.convertAndSend(
-                Constant.DEMO_EXCHANGE,
-                Constant.DEMO_ROUTING_KEY,
+                Constant.DEAD_EXCHANGE,
+                Constant.DEAD_ROUTING_KEY,
                 dto,
                 correlationData);
     }
+
+
 
 }
