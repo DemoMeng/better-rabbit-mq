@@ -39,6 +39,10 @@ public class Constant {
     public final static String DEAD_QUEUE_RE = "dead-queue-re";
 
 
+    //ttl
+    public final static String TTL_QUEUE = "ttl-queue";
+    public final static String TTL_EXCHANGE = "ttl-exchange";
+    public final static String TTL_ROUTING_KEY = "ttl.routing_key";
 
 
 

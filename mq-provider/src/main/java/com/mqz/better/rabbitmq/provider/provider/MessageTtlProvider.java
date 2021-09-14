@@ -10,20 +10,25 @@ import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.core.ReturnedMessage;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import javax.annotation.Resource;
+
 /**
- * @author mqz
- * @description 信保通知消息产生者
- * @abount https://github.com/DemoMeng
- * @since 2020/12/4
+ *  版权所有 © Copyright 2012<br>
+ *
+ * @Author： 蒙大拿
+ * @Date：2021/9/14 9:16 上午
+ * @Description
+ * @About： https://github.com/DemoMeng
  */
 @Component
 @Slf4j
-public class MessageProvider {
-    @Autowired
+public class MessageTtlProvider {
+
+    @Resource
     private RabbitTemplate rabbitTemplate;
+
 
 
     /**
@@ -38,12 +43,12 @@ public class MessageProvider {
         @Override
         public void confirm(CorrelationData correlationData, boolean ack, String cause) {
             String messageId = correlationData.getId();
-            log.info("【延迟消息】消息成功投递触发了【提供者】的回调。。。");
+            log.info("【消息ttl】消息成功投递触发了【提供者】的回调。。。");
             //返回成功，表示消息被正常投递
             if (ack) {
-                log.info("【延迟消息】信息投递成功，messageId:{}",messageId);
+                log.info("【消息ttl】信息投递成功，messageId:{}",messageId);
             } else {
-                log.error("【延迟消息】消费信息失败，messageId:{} 原因:{}",messageId,cause);
+                log.error("【消息ttl】消费信息失败，messageId:{} 原因:{}",messageId,cause);
                 //TODO 重新执行
             }
         }
@@ -57,14 +62,26 @@ public class MessageProvider {
      * 这个方法可以不用重写，因为交换器和队列是在代码中绑定的，若回调了这个方法则说明交换器和队列绑定的问题
      * */
     private final RabbitTemplate.ReturnsCallback returnsCallback = new RabbitTemplate.ReturnsCallback(){
+
         @Override
         public void returnedMessage(ReturnedMessage returnedMessage) {
-            log.info("【延迟消息】消息经交换器发送到队列失败触发，回调参数：{}",returnedMessage);
+            log.info("【消息ttl】消息经交换器发送到队列失败触发，回调参数：{}",returnedMessage);
             //TODO 重新执行
         }
-
     };
 
+
+    /**
+     * 构建消息过期MessagePostProcessor
+     */
+    MessagePostProcessor messagePostProcessor = new MessagePostProcessor() {
+        @Override
+        public Message postProcessMessage(Message message) throws AmqpException {
+            //message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
+            message.getMessageProperties().setExpiration("5000");//设置消息过期时间10s
+            return message;
+        }
+    };
 
 
     /**
@@ -77,27 +94,15 @@ public class MessageProvider {
         rabbitTemplate.setReturnsCallback(this.returnsCallback);
         CorrelationData correlationData = new CorrelationData();
         correlationData.setId(dto.getMessageId());
-
-        //消息延迟投递，需要配置rabbit延迟投递配置，参考RabbitConfig，正常投递不需要配置！！
-        //发送消息时指定 header 延迟时间
+        //如果模拟死信，需要和死信队列，死信交换机绑定，这样死信才有可能重新进入队列
         rabbitTemplate.convertAndSend(
-                Constant.lazy_exchange,
-                Constant.lazy_routing_key,
+                Constant.TTL_EXCHANGE,
+                Constant.TTL_ROUTING_KEY,
                 dto,
-                new MessagePostProcessor() {
-                    @Override
-                    public Message postProcessMessage(Message message) throws AmqpException {
-                        //设置消息持久化
-                        message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.PERSISTENT);
-                        //message.getMessageProperties().setHeader("x-delay", "6000");
-                        message.getMessageProperties().setDelay(10000);//延迟10秒
-                        return message;
-                    }
-                },
-                correlationData
-
-        );
+                messagePostProcessor,
+                correlationData);
     }
+
 
 
 }

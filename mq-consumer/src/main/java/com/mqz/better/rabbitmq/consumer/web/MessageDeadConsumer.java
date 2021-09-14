@@ -11,6 +11,7 @@ import org.springframework.amqp.rabbit.annotation.QueueBinding;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.support.AmqpHeaders;
 import org.springframework.messaging.handler.annotation.Headers;
+import org.springframework.messaging.handler.annotation.Payload;
 import org.springframework.stereotype.Component;
 
 import java.io.IOException;
@@ -35,11 +36,13 @@ public class MessageDeadConsumer {
             key= Constant.DEAD_ROUTING_KEY
         )
     )
-    public void onDo(Message message,
+    public void onDo(@Payload MessageDTO dto,
+                     Message message,
                      @Headers Map<String, Object> headers,
                      Channel channel) throws IOException {
         log.info("【死信】收到消息，开始消费");
-        log.info("【死信】  参数:{}",message.toString());
+        log.info("【死信】  message参数:{}",message.toString());
+        log.info("【死信】  dto参数:{}",dto.toString());
         //模拟消息变成死信
         int i =  10 / 0;
         Long deliveryTag = (Long) headers.get(AmqpHeaders.DELIVERY_TAG);

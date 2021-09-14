@@ -50,15 +50,6 @@ public class RabbitDeadConfig {
     }
 
     /**
-     * 定义死信队列转发队列.
-     * @return the queue
-     */
-    @Bean(Constant.DEAD_QUEUE_RE)
-    public Queue redirectQueue() {
-        return QueueBuilder.durable(Constant.DEAD_QUEUE_RE).build();
-    }
-
-    /**
      * 死信路由通过 绑定键绑定到死信队列上.
      * @return the binding
      */
@@ -69,13 +60,47 @@ public class RabbitDeadConfig {
     }
 
     /**
+     * 定义死信队列转发队列.
+     * @return the queue
+     */
+    @Bean(Constant.DEAD_QUEUE_RE)
+    public Queue redirectQueue() {
+        return QueueBuilder.durable(Constant.DEAD_QUEUE_RE).build();
+    }
+
+    /**
      * 绑定转发队列
      */
     @Bean
     public Binding redirectBinding(@Qualifier(Constant.DEAD_QUEUE_RE) Queue queue,
-                                          @Qualifier(Constant.DEAD_EXCHANGE) DirectExchange topicExchange){//共用同一个交换机
+                                   @Qualifier(Constant.DEAD_EXCHANGE) DirectExchange topicExchange){//共用同一个交换机
         return BindingBuilder.bind(queue).to(topicExchange).with(Constant.DEAD_ROUTING_KEY);
     }
+
+    //死信如果过期后会被丢弃，如果这个死信原来的队列绑定了死信队列的交换机，那么会重新进入绑定这个死信队列的队列中重新消费
+    @Bean
+    public Binding ttlBinding(@Qualifier(Constant.TTL_QUEUE) Queue queue,
+                              @Qualifier(Constant.DEAD_EXCHANGE) DirectExchange topicExchange){
+        return BindingBuilder.bind(queue).to(topicExchange).with(Constant.DEAD_ROUTING_KEY);
+    }
+
+
+//    /**
+//     * 绑定ttl队列
+//     */
+//    @Bean(Constant.TTL_QUEUE)
+//    public Queue createQueue() {
+//        return new Queue(Constant.TTL_QUEUE,true);
+//    }
+//
+//    /**
+//     * 绑定ttl队列到死信交换机和路由上
+//     */
+//    @Bean
+//    public Binding queueRoutingKeyExchangeBinding(@Qualifier(Constant.TTL_QUEUE) Queue queue,
+//                                                  @Qualifier(Constant.DEAD_EXCHANGE) DirectExchange topicExchange){
+//        return BindingBuilder.bind(queue).to(topicExchange).with(Constant.DEAD_ROUTING_KEY);
+//    }
 
 
 

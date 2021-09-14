@@ -16,6 +16,8 @@ spring:
     publisher-confirms: true #如果对异步消息需要回调必须设置为true
     # 实现ReturnCallback接口，如果消息从交换器发送到对应队列失败时触发，（比如根据发送消息时指定的routingKey找不到队列时会触发）
     publisher-returns: true
+    # ConfirmCallback不回调的问题，其中none是不触发回调
+    publisher-confirm-type: correlated
 
     template:
       mandatory: true # 设置为 true 后消息没有成功交换器到被路由到合适队列情况下会被return（ ReturnCallback函数）监听，而不会自动删除

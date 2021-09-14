@@ -17,7 +17,9 @@ spring:
         #最大消费端数
         max-concurrency: 10
         #限流（海量数据，同时只能过来一条）
-        prefetch: 1
+#        prefetch: 1
+#      direct:
+#        prefetch: 1 #限流（海量数据，同时只能过来一条）
 #      direct:
 #        acknowledge-mode: manual  #配置手动确认，和 RabbitConfig 配置一样
 

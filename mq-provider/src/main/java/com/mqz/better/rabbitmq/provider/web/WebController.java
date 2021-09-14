@@ -1,10 +1,7 @@
 package com.mqz.better.rabbitmq.provider.web;
 
 import com.mqz.better.rabbitmq.common.model.dto.MessageDTO;
-import com.mqz.better.rabbitmq.provider.provider.MessageDeadLetterProvider;
-import com.mqz.better.rabbitmq.provider.provider.MessageDemoProvider;
-import com.mqz.better.rabbitmq.provider.provider.MessageProvider;
-import com.mqz.better.rabbitmq.provider.provider.MessageUsuallyProvider;
+import com.mqz.better.rabbitmq.provider.provider.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -27,13 +24,15 @@ import java.util.UUID;
 public class WebController {
 
     @Resource
-    private MessageProvider messageProvider;
+    private MessageDelayProvider messageDelayProvider;
     @Resource
     private MessageUsuallyProvider messageUsuallyProvider;
     @Resource
     private MessageDemoProvider messageDemoProvider;
     @Resource
     private MessageDeadLetterProvider messageDeadLetterProvider;
+    @Resource
+    private MessageTtlProvider messageTtlProvider;
 
     @PostMapping(value = "go")
     @ApiOperation(value = "延迟投递消息-发送")
@@ -43,7 +42,7 @@ public class WebController {
                 .setBusinessNo(dto.getBusinessNo())
                 .setTemplateNo(dto.getTemplateNo())
                 .setUrl(dto.getUrl());
-        messageProvider.send(d);
+        messageDelayProvider.send(d);
         return "【延迟投递消息】messageId:"+d.getMessageId();
     }
 
@@ -84,5 +83,21 @@ public class WebController {
         messageDeadLetterProvider.send(d);
         return "【死信队列】messageId:"+d.getMessageId();
     }
+
+    @PostMapping(value = "ttl/go")
+    @ApiOperation(value = "消息过期-发送")
+    public String ttlGo(@RequestBody MessageDTO dto){
+        MessageDTO d = new MessageDTO()
+                .setMessageId(UUID.randomUUID().toString())
+                .setBusinessNo(dto.getBusinessNo())
+                .setTemplateNo(dto.getTemplateNo())
+                .setUrl(dto.getUrl());
+        messageTtlProvider.send(d);
+        return "【消息过期】messageId:"+d.getMessageId();
+    }
+
+
+
+
 
 }

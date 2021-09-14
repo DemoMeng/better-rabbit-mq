@@ -56,13 +56,26 @@ public class RabbitDelayConfig {
 
 
     // 延迟投递 配置交换器、队列、交换器队列绑定----开始------
-    @Bean("customExchangeBean")
-    public CustomExchange lazyTopicExchange(){
+//    @Bean("customExchangeBean")
+//    public CustomExchange lazyTopicExchange(){
+//        Map<String, Object> pros = new HashMap<>();
+//        //设置交换机支持延迟消息推送
+//        //pros.put("x-delayed-message", "direct");
+//        CustomExchange customExchange = new CustomExchange(Constant.lazy_exchange,"x-delayed-message",true,false,pros);
+//        return customExchange;
+//    }
+
+    /**
+     * 上面customerExchange也可以实现 延迟队列
+     */
+    @Bean("topicExchangeDelay")
+    public TopicExchange lazyTopicExchange(){
         Map<String, Object> pros = new HashMap<>();
         //设置交换机支持延迟消息推送
         //pros.put("x-delayed-message", "direct");
-        CustomExchange customExchange = new CustomExchange(Constant.lazy_exchange,"x-delayed-message",true,false,pros);
-        return customExchange;
+        TopicExchange topicExchange = new TopicExchange(Constant.lazy_exchange,true,false,pros);
+        topicExchange.setDelayed(true);
+        return topicExchange;
     }
 
 
@@ -74,7 +87,8 @@ public class RabbitDelayConfig {
 
     @Bean
     public Binding lazyBinding(){
-        return BindingBuilder.bind(lazyQueue()).to(lazyTopicExchange()).with(Constant.lazy_routing_key).noargs();
+        //return BindingBuilder.bind(lazyQueue()).to(lazyTopicExchange()).with(Constant.lazy_routing_key).noargs(); //针对CustomerExchange
+        return BindingBuilder.bind(lazyQueue()).to(lazyTopicExchange()).with(Constant.lazy_routing_key);
     }
     // 延迟投递 配置交换器、队列、交换器队列绑定----结束------
 
