@@ -17,7 +17,7 @@ import org.springframework.context.annotation.Configuration;
  * @About： https://github.com/DemoMeng
  */
 @Configuration
-public class RabbitCreator {
+public class RabbitUsuallyConfig {
 
     /**
      * 创建队列和交换机，此处不应该创建 ConnectionFactory 和 RabbitAdmin，应该在 application.properties 中设置用户名、密码、host、端口、虚拟主机即可。
@@ -54,7 +54,7 @@ public class RabbitCreator {
         return new Queue(Constant.usually_queue,true);
     }
     @Bean(Constant.usually_exchange)
-    public Exchange createExchange2(){
+    public TopicExchange createExchange2(){
         return new TopicExchange(Constant.usually_exchange,true,false);
     }
     @Bean
@@ -63,19 +63,6 @@ public class RabbitCreator {
         return BindingBuilder.bind(queue).to(topicExchange).with(Constant.usually_routing_key);
     }
 
-
-    /**
-     * demo队列
-     */
-    @Bean(Constant.DEMO_QUEUE)
-    public Queue createDemoQueue() {
-        return new Queue(Constant.DEMO_QUEUE,true);
-    }
-    @Bean
-    public Binding createDemoQueueBinding(@Qualifier(Constant.DEMO_QUEUE) Queue queue,
-                                          @Qualifier(Constant.usually_exchange) TopicExchange topicExchange){//共用同一个交换机
-        return BindingBuilder.bind(queue).to(topicExchange).with(Constant.DEMO_ROUTING_KEY);
-    }
 
 
     /**
