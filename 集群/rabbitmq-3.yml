@@ -1,0 +1,28 @@
+services:
+  rabbitmq1:
+    image: rabbitmq:3.8.9-management
+    container_name: rabbitmq3
+    hostname: rabbit_host3
+    ports:
+      - "4369:4369"
+      - "5671:5671"
+      - "5672:5672"
+      - "15671:15671"
+      - "15672:15672"
+      - "25672:25672"
+    extra_hosts:
+      - "rabbit_host1:192.168.2.9"
+      - "rabbit_host2:192.168.2.11"
+      - "rabbit_host3:192.168.2.7"
+    volumes:
+      - /root/mqz/rabbitmq/docker/lib:/var/lib/rabbitmq
+      - /root/mqz/rabbitmq/docker/log:/var/log/rabbitmq
+    restart: always
+    environment:
+      - RABBITMQ_DEFAULT_USER=mqz
+      - RABBITMQ_DEFAULT_PASS=mqz
+      - RABBITMQ_ERLANG_COOKIE=CURIOAPPLICATION
+      - RABBITMQ_NODENAME:rabbitmq3
+
+
+

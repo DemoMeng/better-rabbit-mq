@@ -1,9 +1,12 @@
+
 spring:
   rabbitmq:
-    host: 192.168.2.11
-    port: 5672
+    #host: 192.168.2.9 # 单机配置
+    #port: 5672        # 单机配置
     username: mqz
     password: mqz
+    # 集群配置
+    addresses: 192.168.2.9:5672,192.168.2.7:5672 #,192.168.2.11:5672 # 集群ip地址
     #虚拟主机地址
     virtual-host: /
     connection-timeout: 15000
